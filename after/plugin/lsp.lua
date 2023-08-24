@@ -1,10 +1,12 @@
 local cmp = require("cmp")
 local lspkind = require("lspkind")
+local null_ls = require("null-ls")
 
 local lsp = require('lsp-zero').preset({})
 
 lsp.ensure_installed({
-    "lua_ls", "tsserver", "gopls", "rust_analyzer", "jedi_language_server"
+    "lua_ls", "tsserver", "gopls", "rust_analyzer", "jedi_language_server",
+    "eslint"
 })
 
 lsp.nvim_workspace()
@@ -42,6 +44,26 @@ lsp.on_attach(function(_, bufnr)
     vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
 end)
 
+lsp.format_on_save {
+    format_opts = {async = false, timeout_ms = 10000},
+    servers = {
+        ['lua_ls'] = {'lua'},
+        ['rust_analyzer'] = {'rust'},
+        ['gopls'] = {'go'},
+        ['null-ls'] = {
+            "javascript", "javascriptreact", "typescript", "typescriptreact",
+            "vue", "css", "scss", "less", "html", "json", "jsonc", "yaml",
+            "markdown", "markdown.mdx", "graphql", "handlebars", "python"
+        }
+    }
+}
+
+null_ls.setup({
+    sources = {
+        null_ls.builtins.formatting.prettierd, null_ls.builtins.formatting.black
+    }
+})
+
 require("lspconfig").lua_ls.setup({
     settings = {
         Lua = {
@@ -54,6 +76,8 @@ require("lspconfig").lua_ls.setup({
         }
     }
 })
+
+require('lspconfig').eslint.setup({})
 
 require("lspconfig").tsserver.setup({})
 

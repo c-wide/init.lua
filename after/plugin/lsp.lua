@@ -58,6 +58,8 @@ lsp.format_on_save {
     }
 }
 
+require("mason-null-ls").setup({ensure_installed = {"prettierd", "black"}})
+
 null_ls.setup({
     sources = {
         null_ls.builtins.formatting.prettierd, null_ls.builtins.formatting.black

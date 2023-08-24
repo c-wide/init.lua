@@ -1,5 +1,5 @@
 -- Return to netrw
-vim.keymap.set("n", "<leader>e", ":E<CR>")
+vim.keymap.set("n", "<leader>e", ":Ex<CR>")
 
 -- :)
 vim.keymap.set("i", "<C-c>", "<Esc>")

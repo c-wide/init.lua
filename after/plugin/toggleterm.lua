@@ -1,4 +1,4 @@
-local silent = {silent = true}
+local silent = { silent = true }
 
 vim.keymap.set("n", "<C-\\>", ":ToggleTerm<cr>")
 vim.keymap

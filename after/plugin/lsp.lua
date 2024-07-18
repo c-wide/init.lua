@@ -6,7 +6,7 @@ local lsp = require('lsp-zero').preset({})
 
 lsp.ensure_installed({
     "lua_ls", "tsserver", "gopls", "rust_analyzer", "jedi_language_server",
-    "eslint"
+    "eslint", "biome", "jsonls"
 })
 
 lsp.nvim_workspace()
@@ -16,21 +16,21 @@ cmp.setup({
         expand = function(args) require("luasnip").lsp_expand(args.body) end
     },
     mapping = cmp.mapping.preset.insert({
-        ["<Tab>"] = cmp.mapping.confirm({select = true}),
+        ["<Tab>"] = cmp.mapping.confirm({ select = true }),
         ["<C-n>"] = cmp.mapping(function()
             if cmp.visible() then cmp.select_next_item() end
-        end, {"i", "s"}),
+        end, { "i", "s" }),
         ["<C-p>"] = cmp.mapping(function()
             if cmp.visible() then cmp.select_prev_item() end
-        end, {"i", "s"})
+        end, { "i", "s" })
     }),
-    sources = cmp.config.sources({{name = "nvim_lsp"}, {name = "luasnip"}},
-                                 {{name = "buffer"}}),
-    formatting = {format = lspkind.cmp_format({mode = "symbol", maxwidth = 50})}
+    sources = cmp.config.sources({ { name = "nvim_lsp" }, { name = "luasnip" } },
+        { { name = "buffer" } }),
+    formatting = { format = lspkind.cmp_format({ mode = "symbol", maxwidth = 50 }) }
 })
 
 lsp.on_attach(function(_, bufnr)
-    local opts = {buffer = bufnr, remap = false}
+    local opts = { buffer = bufnr, remap = false }
 
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
@@ -38,18 +38,18 @@ lsp.on_attach(function(_, bufnr)
     vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
     vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts)
     vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts)
-    vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, opts)
-    vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
-    vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "<leader>rr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
 end)
 
 lsp.format_on_save {
-    format_opts = {async = false, timeout_ms = 10000},
+    format_opts = { async = false, timeout_ms = 10000 },
     servers = {
-        ['lua_ls'] = {'lua'},
-        ['rust_analyzer'] = {'rust'},
-        ['gopls'] = {'go'},
+        ['lua_ls'] = { 'lua' },
+        ['rust_analyzer'] = { 'rust' },
+        ['gopls'] = { 'go' },
         ['null-ls'] = {
             "javascript", "javascriptreact", "typescript", "typescriptreact",
             "vue", "css", "scss", "less", "html", "json", "jsonc", "yaml",
@@ -58,11 +58,11 @@ lsp.format_on_save {
     }
 }
 
-require("mason-null-ls").setup({ensure_installed = {"prettierd", "black"}})
+require("mason-null-ls").setup({ ensure_installed = { "prettierd", "biome", "black" } })
 
 null_ls.setup({
     sources = {
-        null_ls.builtins.formatting.prettierd, null_ls.builtins.formatting.black
+        null_ls.builtins.formatting.prettierd, null_ls.builtins.formatting.biome, null_ls.builtins.formatting.black
     }
 })
 
@@ -79,12 +79,23 @@ require("lspconfig").lua_ls.setup({
     }
 })
 
-require('lspconfig').eslint.setup({})
+require('lspconfig').jsonls.setup {
+    settings = {
+        json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+        },
+    },
+}
+
+require("lspconfig").biome.setup({})
+
+require("lspconfig").eslint.setup({})
 
 require("lspconfig").tsserver.setup({})
 
 require("lspconfig").gopls.setup({
-    settings = {gopls = {analyses = {unusedparams = true}, staticcheck = true}}
+    settings = { gopls = { analyses = { unusedparams = true }, staticcheck = true } }
 })
 
 require("lspconfig").rust_analyzer.setup({})

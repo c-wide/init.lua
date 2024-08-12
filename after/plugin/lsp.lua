@@ -6,7 +6,7 @@ local lsp = require('lsp-zero').preset({})
 
 lsp.ensure_installed({
     "lua_ls", "tsserver", "gopls", "rust_analyzer", "jedi_language_server",
-    "eslint", "biome", "jsonls"
+    "eslint", "biome", "jsonls", "tailwindcss"
 })
 
 lsp.nvim_workspace()
@@ -93,6 +93,19 @@ require("lspconfig").biome.setup({})
 require("lspconfig").eslint.setup({})
 
 require("lspconfig").tsserver.setup({})
+
+require("lspconfig").tailwindcss.setup({
+    settings = {
+        tailwindCSS = {
+            experimental = {
+                classRegex = {
+                    { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                    { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" }
+                },
+            },
+        },
+    },
+})
 
 require("lspconfig").gopls.setup({
     settings = { gopls = { analyses = { unusedparams = true }, staticcheck = true } }
